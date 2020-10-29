@@ -22,30 +22,67 @@
 
     <script>
         // Assign the specification to a local variable vlSpec.
-        var vlSpec = {
-             "$schema":"https://vega.github.io/schema/vega-lite/v4.json",
-             "width":800,
-             "height":600,
-             "title":"",
-             "projection":{
-                "type":"equalEarth"
-             },
-             "layer":[
-                {
-                   "data":{
-                      "url":"https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/custom.geo%20(1)%20(1).json",
-                      "format":{
-                         "type":"topojson",
-                         "feature":"custom"
-                      }
-                   },
-                   "mark":{
-                      "type":"geoshape",
-                      "fill":"lightgray",
-                      "stroke":"white"
-                   }
-                }
-             ]
-          }// Embed the visualization in the container with id `vis`
+        var vlSpec ={
+  "$schema":"https://vega.github.io/schema/vega-lite/v4.json",
+  "width":800,
+  "height":600,
+  "title":"",
+  "projection":{
+    "type":"albersUsa"
+  },
+  "layer":[
+    {
+      "data":{
+        "url":"https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/us-states.json",
+        "format":{
+          "type":"topojson",
+          "feature":"custom"
+        }
+      },
+      "mark":{
+        "type":"geoshape",
+        "fill":"lightgray",
+        "stroke":"white"
+      }
+    },
+     {
+      "data": {
+        "url": "https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/PresidentialPolls.csv"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "Longtitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "Latitude",
+          "type": "quantitative"
+        }
+      },
+      "layer": [{
+        "mark": "circle",
+        "encoding" : {
+            "color": {
+                "field": "adjpoll_trump", 
+                "type": "quantitative"
+            },
+            "size": {
+                "field": "adjpoll_trump", 
+                "type": "quantitative"
+            }
+        }
+      },
+      {
+        "mark": {
+          "type": "text",
+          "dy": -10
+        },
+        "encoding": {
+          "text": {"field": "state", "type": "nominal"}
+        }
+      }]
+    }
+  ]
+}// Embed the visualization in the container with id `vis`
         vegaEmbed('#vis', vlSpec);
       </script>
