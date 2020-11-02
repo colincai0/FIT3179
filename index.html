@@ -14,75 +14,212 @@
         margin-right: 5px;
       }
     </style>
+  <style>
+    body {
+      background-color: black;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    .header-div {
+      width: 100%;
+      text-align: center;
+    }
+    .first-container
+    {
+      display: flex;
+      vertical-align: middle;
+      align-items: center;
+    }
+  </style>
   </head>
   <body>
-    <h1>Template for Embedding Vega-Lite Visualization</h1>
+    <div class="header-div">
+      <h1>An Insight into Trumps 2016 Election</h1>
+    </div>
     <!-- Container for the visualization -->
-    <div id="vis"></div>
-
+    <div class="first-container">
+      <div id="vis"></div>
+      <div id="vis3"></div>
+    </div>
+    <div id="vis2"></div>
     <script>
         // Assign the specification to a local variable vlSpec.
         var vlSpec ={
-  "$schema":"https://vega.github.io/schema/vega-lite/v4.json",
-  "width":800,
-  "height":600,
-  "title":"",
-  "projection":{
-    "type":"albersUsa"
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "width": 900,
+  "height": 500,
+  "background" : "black",
+  "config": {
+    "style": {
+      "cell": {
+        "stroke": "transparent"
+      }
+    }
   },
-  "layer":[
-    {
-      "data":{
-        "url":"https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/us-states.json",
-        "format":{
-          "type":"topojson",
-          "feature":"custom"
-        }
+  "data": {
+    "url": "https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/USA_GeometryCollection_new.json",
+    "format": {
+      "type": "topojson",
+      "feature": "USA"
+    }
+  },
+  "transform": [{
+    "lookup": "id",
+    "from": {
+      "data": {
+        "url": "https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/PollsUnitedStates2.csv"
       },
-      "mark":{
-        "type":"geoshape",
-        "fill":"lightgray",
-        "stroke":"white"
+      "key": "State",
+      "fields": ["Average of rawpoll_trump","Population", "Average of rawpoll_clinton"]
+    },
+    "default": "null"
+  }],
+  "encoding": {
+    "color": {
+      "field": "Average of rawpoll_trump",
+      "type": "quantitative",
+      "condition": {
+        "test": "datum['Average of rawpoll_trump'] === null",
+        "value": "#000000"
+      },
+      "scale": {"scheme": "lightmulti"},
+      "legend": {
+        "labelColor": "white",
+        "titleColor": "white"
       }
     },
-     {
-      "data": {
-        "url": "https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/PresidentialPolls.csv"
-      },
-      "encoding": {
-        "longitude": {
-          "field": "Longtitude",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "Latitude",
-          "type": "quantitative"
-        }
-      },
-      "layer": [{
-        "mark": "circle",
-        "encoding" : {
-            "color": {
-                "field": "adjpoll_trump", 
-                "type": "quantitative"
-            },
-            "size": {
-                "field": "adjpoll_trump", 
-                "type": "quantitative"
-            }
-        }
-      },
-      {
-        "mark": {
-          "type": "text",
-          "dy": -10
-        },
-        "encoding": {
-          "text": {"field": "state", "type": "nominal"}
-        }
-      }]
-    }
-  ]
+  "tooltip": [
+      {"field": "Average of rawpoll_trump", "type": "quantitative"},
+      {"field": "Average of rawpoll_clinton", "type": "quantitative"},
+      {"field": "Population", "type": "quantitative"}]
+  },
+  
+  "projection": {
+    "type": "albersUsa"
+  },
+  "mark": "geoshape"
+  
 }// Embed the visualization in the container with id `vis`
-        vegaEmbed('#vis', vlSpec);
+        vegaEmbed('#vis', vlSpec).then(function(result) {
+			var div = document.getElementById('vis');
+			div.removeChild(div.childNodes[1]);
+			var node = div.childNodes[0];
+			div.innerHTML = '';
+			div.appendChild(node);
+		}).catch(console.error);;
       </script>
+
+<script>
+    // Assign the specification to a local variable vlSpec.
+    var vlSpec = {
+   "$schema":"https://vega.github.io/schema/vega-lite/v4.json",
+   "background":"black",
+   "data":{
+      "url":"https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/PollUnitedStates4.csv"
+   },
+   "width":{
+      "step":12
+   },
+   "mark":"bar",
+   "encoding":{
+      "column":{
+         "field":"Population3",
+         "type":"ordinal",
+         "spacing":10,
+         "title":"Population",
+		 "header": {
+			 "labelColor": "white",
+			 "titleColor": "white"
+		 }
+      },
+      "y":{
+         "aggregate":"mean",
+         "field":"Value",
+         "title":"Poll",
+         "axis":{
+            "grid":false,
+            "labelColor":"white",
+            "titleColor":"white"
+         }
+      },
+      "x":{
+         "field":"Trump/Clinton",
+         "axis":{
+            "title":"",
+            "labelColor":"white"
+         }
+      },
+      "color":{
+         "field":"Trump/Clinton",
+         "scale":{
+            "range":[
+               "#2F79C3",
+               "#891639"
+            ]
+         }
+      }
+   },
+   "config":{
+      "view":{
+         "stroke":"transparent"
+      },
+      "axis":{
+         "domainWidth":1,
+		 "labelColor": "white",
+		 "titleColor": "white"
+      }
+   }
+}
+    vegaEmbed('#vis2', vlSpec).then(function(result) {
+			var div = document.getElementById('vis2');
+			div.removeChild(div.childNodes[1]);
+			var node = div.childNodes[0];
+			div.innerHTML = '';
+			div.appendChild(node);
+		}).catch(console.error);;
+  </script>
+
+<script>
+  // Assign the specification to a local variable vlSpec.
+  var vlSpec =
+  {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "width": 500,
+  "height": 350,
+  "background": "black",
+  "description": "A bar chart showing the US population distribution of age groups in 2000.",
+  "height": {"step": 17},
+  "data": {"url": "https://raw.githubusercontent.com/colincai0/colincai0.github.io/main/PollsUnitedStates3.csv"},
+  "mark": "bar",
+  "encoding": {
+    "y": {
+		"field": "Trump/Clinton",
+		"axis": {
+			"labelColor": "white"
+		}
+		},
+    "x": {"aggregate": "median", "field": "Adj_Poll", "title": "Poll",
+		"axis": {
+			"labelColor": "white"
+		}},
+     "color": {
+		 "field": "Trump/Clinton", 
+		 "scale": {"range": ["#2F79C3", "#891639"]},
+		 "legend": {
+			 "labelColor": "white"
+		 }
+	}
+  }
+}
+
+  vegaEmbed('#vis3', vlSpec).then(function(result) {
+			var div = document.getElementById('vis3');
+			div.removeChild(div.childNodes[1]);
+			var node = div.childNodes[0];
+			div.innerHTML = '';
+			div.appendChild(node);
+		}).catch(console.error);;
+  </script>
